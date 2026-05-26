@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Kick | 智慧健康促進遊戲機</title>
+    
+    <!-- 外部資源 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC:wght@300;500;900&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #00ffa3;
+            --secondary: #00d4ff;
+            --accent: #ff007a;
+            --dark-bg: #050a14;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-main: #e2e8f0;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* 自定義捲動條 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--dark-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* 導覽列 */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 10, 20, 0.8);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 255, 163, 0.1);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-links { display: flex; list-style: none; gap: 30px; }
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .nav-links a:hover { color: var(--primary); }
+
+        /* 英雄看板 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 255, 163, 0.1) 0%, transparent 50%);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero-content h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 10vw, 6rem);
+            line-height: 1;
+            margin-bottom: 20px;
+            background: linear-gradient(to bottom, #fff 30%, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-tagline {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        /* 影片播放區樣式 */
+        .video-section {
+            background: linear-gradient(to bottom, var(--dark-bg), #0a0f1d);
+            padding: 80px 10%;
+            text-align: center;
+        }
+
+        .video-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 255, 163, 0.15);
+            border: 1px solid rgba(0, 255, 163, 0.3);
+            background: #000;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-placeholder {
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .video-placeholder i {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.6;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .video-placeholder i:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            text-shadow: 0 0 20px var(--primary);
+        }
+
+        /* 玻璃擬態卡片 */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            transition: var(--transition);
+        }
+        .glass-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 255, 163, 0.2);
+            transform: translateY(-10px);
+        }
+
+        /* 產品特點區 */
+        .section { padding: 100px 10%; }
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            font-family: 'Orbitron', sans-serif;
+        }
+        .section-title span { color: var(--primary); }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        /* 互動模擬器 */
+        #simulator {
+            background: #0a0f1d;
+            padding: 80px 10%;
+            text-align: center;
+        }
+
+        .sim-container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 2px solid #1e293b;
+            border-radius: 30px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .lcd-screen {
+            background: #111;
+            margin: 30px;
+            padding: 40px;
+            border: 4px inset #222;
+            border-radius: 10px;
+            font-family: 'Orbitron', monospace;
+            color: var(--primary);
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            text-shadow: 0 0 15px var(--primary);
+            position: relative;
+        }
+
+        .lcd-screen::after {
+            content: "";
+            position: absolute;
+            top:0; left:0; width:100%; height:100%;
+            background: linear-gradient(rgba(0,255,163,0.05) 50%, transparent 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        .pedal-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding-bottom: 50px;
+        }
+
+        .pedal-btn {
+            background: #1a1f2e;
+            border: none;
+            padding: 25px 40px;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 0 8px 0 #0f172a;
+            position: relative;
+        }
+
+        .pedal-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #0f172a;
+        }
+
+        .pedal-btn.rock { border-top: 4px solid #ff4757; }
+        .pedal-btn.scissors { border-top: 4px solid #2f3542; }
+        .pedal-btn.paper { border-top: 4px solid #70a1ff; }
+
+        /* 技術規格清單 */
+        .tech-list {
+            list-style: none;
+            margin-top: 20px;
+        }
+        .tech-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+        }
+        .tech-list li span { color: var(--primary); font-weight: bold; }
+
+        /* 頁尾 */
+        footer {
+            padding: 60px;
+            text-align: center;
+            background: #02060c;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* 動畫類 */
+        .accent-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(150px);
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 20px; }
+            .nav-links { display: none; }
+            .section { padding: 60px 5%; }
+            .pedal-group { flex-direction: column; align-items: center; }
+            .pedal-btn { width: 80%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">SMART KICK</a>
+        <ul class="nav-links">
+            <li><a href="#video">產品影片</a></li>
+            <li><a href="#about">設計初衷</a></li>
+            <li><a href="#simulator">線上體驗</a></li>
+            <li><a href="#specs">技術規格</a></li>
+        </ul>
+    </nav>
+
+    <header class="hero">
+        <div class="accent-glow" style="top: 20%; left: 20%;"></div>
+        <div class="hero-content" data-aos="fade-up">
+            <h1>SMART KICK</h1>
+            <p class="hero-tagline">全台首創．腳踢式健康促進對戰機</p>
+            <p style="max-width: 700px; margin: 0 auto 40px; color: #94a3b8;">
+                結合 Arduino 高效能運算與人體工學踏板設計，將猜拳遊戲轉化為預防肌少症的趣味訓練。
+                每一次抬腳，都是邁向長壽的一步。
+            </p>
+            <a href="#video" style="text-decoration: none;" class="pedal-btn">查看宣傳影片</a>
+        </div>
+        <div class="accent-glow" style="bottom: 20%; right: 20%;"></div>
+    </header>
+
+    <!-- 新增：廣告影片預留區 -->
+    <section id="video" class="video-section">
+        <h2 class="section-title" data-aos="fade-up">產品<span>宣傳廣告</span></h2>
+        <div class="video-container" data-aos="zoom-in">
+            <!-- 預留位置：如果你有 YouTube 影片，將下方 div 換成 iframe -->
+            <!-- 例如: <iframe width="100%" height="100%" src="https://www.youtube.com/embed/影片ID" frameborder="0" allowfullscreen></iframe> -->
+            <div class="video-placeholder">
+                <i class="fas fa-play-circle" onclick="alert('影片加載中...此處可嵌入 YouTube 或本地 MP4 影片')"></i>
+                <p style="font-family: 'Orbitron', sans-serif; letter-spacing: 2px;">PROMO VIDEO PLAYER</p>
+                <p style="color: #555; font-size: 0.9rem; margin-top: 10px;">( 預留 20 秒廣告影片區域 )</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="section">
+        <h2 class="section-title">設計<span>初衷</span></h2>
+        <div class="features-grid">
+            <div class="glass-card" data-aos="fade-right">
+                <i class="fas fa-walking fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
+                <h3>拒絕復健枯燥化</h3>
+                <p>針對中高齡者開發，透過「剪刀、石頭、布」的直覺邏輯，大幅降低科技使用門檻，提升運動參與率度。</p>
+            </div>
+            <div class="glass-card" data-aos="fade-up">
+                <i class="fas fa-shield-alt fa-3x" style="color: var(--secondary); margin-bottom: 20px;"></i>
+                <h3>物理安全防護</h3>
+                <p>獨家採用棉線限位機制與密集板支架，確保使用者在激烈對戰時，踏板始終維持在安全幅度的運作範圍。</p>
+            </div>
+            <div class="glass-card" data-aos="fade-left">
+                <i class="fas fa-brain fa-3x" style="color: var(--accent); margin-bottom: 20px;"></i>
+                <h3>身心能量同步</h3>
+                <p>不僅訓練下肢肌力，更考驗反應力與腦部判斷。單人/雙人模式切換，增加社交互動價值。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="simulator">
+        <h2 class="section-title">線上模擬<span>體驗</span></h2>
+        <div class="sim-container" data-aos="zoom-in">
+            <div class="lcd-screen" id="display">
+                <div style="font-size: 1rem; color: #666; margin-bottom: 10px;">SYSTEM: ONLINE</div>
+                <div id="statusText">READY TO KICK!</div>
+            </div>
+            <div class="pedal-group">
+                <button class="pedal-btn rock" onclick="playGame('石頭')">石頭 (ROCK)</button>
+                <button class="pedal-btn scissors" onclick="playGame('剪刀')">剪刀 (SCISSORS)</button>
+                <button class="pedal-btn paper" onclick="playGame('布')">布 (PAPER)</button>
+            </div>
+            <p style="color: #444; padding-bottom: 20px;">* 線上模擬透過點擊取代實體腳踢動作</p>
+        </div>
+    </section>
+
+    <section id="specs" class="section" style="background: rgba(255,255,255,0.02);">
+        <div style="display: flex; flex-wrap: wrap; gap: 50px; align-items: center;">
+            <div style="flex: 1; min-width: 300px;" data-aos="fade-right">
+                <h2 class="section-title" style="text-align: left;">核心<span>技術規格</span></h2>
+                <ul class="tech-list">
+                    <li>核心控制器 <span>Arduino Uno R3</span></li>
+                    <li>判斷機制 <span>高靈敏微動開關 x7</span></li>
+                    <li>回饋系統 <span>物理彈簧 + 無源蜂鳴器</span></li>
+                    <li>視覺輸出 <span>I2C 1602 LCD + LED 燈組</span></li>
+                    <li>電源支援 <span>5V 2A 獨立電源供電</span></li>
+                </ul>
+            </div>
+            <div style="flex: 1; min-width: 300px;" data-aos="fade-left">
+                <div class="glass-card">
+                    <h3 style="color: var(--primary);">軟體邏輯邏輯</h3>
+                    <p style="font-family: monospace; font-size: 0.9rem; color: #aaa; background: #000; padding: 20px; border-radius: 10px; border-left: 4px solid var(--primary);">
+                        if (currentA == currentB) draw = true;<br>
+                        else if (winCondition) aWins = true;<br>
+                        else bWins = true;<br><br>
+                        // 動態亂數生成 A.I. 對手<br>
+                        currentB = random(0, 3);
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <h2 style="font-family: 'Orbitron', sans-serif; color: var(--primary); margin-bottom: 10px;">SMART KICK</h2>
+        <p>最終產品原型設計團隊 (PROTOTYPE DESIGN)</p>
+        <p style="margin: 20px 0; color: #555;">蔡曜丞 | 謝丞昱 | 吳庭瑋 | 吳易聰</p>
+        <p style="font-size: 0.8rem; margin-top: 40px; color: #444;">© 2024 健康促進遊戲機專案組. 版權所有.</p>
+    </footer>
+
+    <!-- 腳本區 -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(freq, duration) {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            setTimeout(() => oscillator.stop(), duration);
+        }
+
+        function playGame(playerChoice) {
+            const display = document.getElementById('statusText');
+            const choices = ['石頭', '剪刀', '布'];
+            const cpuChoice = choices[Math.floor(Math.random() * 3)];
+            
+            playBeep(800, 100);
+            display.innerText = "CALCULATING...";
+            display.style.color = "#60efff";
+
+            setTimeout(() => {
+                let result = "";
+                let color = "";
+
+                if (playerChoice === cpuChoice) {
+                    result = "DRAW!";
+                    color = "#f1c40f";
+                    playBeep(400, 300);
+                } else if (
+                    (playerChoice === '石頭' && cpuChoice === '剪刀') ||
+                    (playerChoice === '剪刀' && cpuChoice === '布') ||
+                    (playerChoice === '布' && cpuChoice === '石頭')
+                ) {
+                    result = "YOU WIN!";
+                    color = "#00ffa3";
+                    playBeep(1200, 100); 
+                    setTimeout(() => playBeep(1500, 200), 150);
+                } else {
+                    result = "CPU WIN!";
+                    color = "#ff4757";
+                    playBeep(200, 500);
+                }
+
+                display.innerHTML = `<span style="font-size:0.9rem; color:#aaa">CPU: ${cpuChoice}</span><br>${result}`;
+                display.style.color = color;
+            }, 600);
+        }
+    </script>
+</body>
+</html>
