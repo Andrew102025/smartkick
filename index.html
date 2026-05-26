@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🦵足健康 健康促進遊戲機🦶</title>
+    <link rel="icon" type="image/png" href="LOGO.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC:wght@300;500;900&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -60,6 +61,20 @@
             color: var(--primary);
             text-decoration: none;
             letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .nav-links { display: flex; list-style: none; gap: 30px; }
@@ -290,7 +305,10 @@
 <body>
 
     <nav>
-        <a href="#" class="logo">SMART KICK</a>
+        <a href="#" class="logo">
+            <img src="LOGO.png" alt="SMART KICK Logo">
+            SMART KICK
+        </a>
         <ul class="nav-links">
             <li><a href="#video">產品影片</a></li>
             <li><a href="#about">設計初衷</a></li>
